@@ -32,7 +32,11 @@ This repository provides a working setup for UMN MSI that solves:
 
 - Access to UMN MSI cluster
 - Isaac Gym Preview 4 downloaded to `~/isaacgym/`
-- VNC viewer on your local machine (RealVNC, TigerVNC, etc.)
+  - Download from: https://developer.nvidia.com/isaac-gym/download
+  - Requires NVIDIA Developer account (free)
+  - Extract to your home directory: `tar -xzf IsaacGym_Preview_4_Package.tar.gz -C ~/`
+- VNC viewer on your local machine
+  - [RealVNC Viewer](https://www.realvnc.com/en/connect/download/viewer/)
 
 ## Usage
 
