@@ -1,6 +1,7 @@
 # Motivation
 
 (This is the only section written by me, rest is by Claude 4.5 Sonnet)
+
 I was used to running Isaac Gym on RTX 4090 and now when I have access to a cluster, I really wanted access to the GUI to play the policies. I know it can be recorded and viewed but I have spent a lot of time zooming and panning live to see what is wrong with my robot. I wasted a lot of time to set this up, so I hope this is useful to someone. Just share this repo to your LLM and then it should take care from there for your specific case.
 
 ![Legged Gym training ANYmal with live GUI via VNC](images/legged_gym_vnc.png)
