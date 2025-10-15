@@ -136,7 +136,6 @@ cd rsl_rl && git checkout v1.0.2 && cd ~
 The first time you run, the script will automatically install:
 - `rsl_rl` (PPO implementation)
 - `legged_gym` (locomotion environments)
-- `tensorboard` (for logging)
 
 These are installed as **editable installs**, meaning:
 - Your code changes are picked up immediately
