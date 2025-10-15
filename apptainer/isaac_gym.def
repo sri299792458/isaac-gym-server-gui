@@ -1,0 +1,94 @@
+Bootstrap: docker
+From: nvidia/cuda:11.8.0-devel-ubuntu20.04
+
+%post
+    # Prevent interactive prompts during package installation
+    export DEBIAN_FRONTEND=noninteractive
+    export TZ=America/Chicago
+    
+    # ============================================================
+    # SYSTEM DEPENDENCIES
+    # ============================================================
+    # We need a specific set of libraries for Isaac Gym to work:
+    # 1. OpenGL/EGL libraries for GPU rendering
+    # 2. X11 libraries for window system (even though we use VNC)
+    # 3. VNC tools (xvfb, x11vnc) for virtual display
+    # 4. Python 3.8 (Isaac Gym requires Python 3.6-3.8)
+    
+    apt-get update && apt-get install -y \
+        # Build tools (needed for compiling PyTorch extensions)
+        build-essential \
+        cmake \
+        git \
+        curl \
+        wget \
+        vim \
+        # OpenGL/EGL libraries - CRITICAL for GPU rendering
+        # Isaac Gym uses EGL for offscreen rendering
+        libegl1-mesa \
+        libegl1-mesa-dev \
+        libgl1-mesa-glx \
+        libgl1-mesa-dri \
+        libgles2-mesa-dev \
+        libglew-dev \
+        libglfw3 \
+        libglfw3-dev \
+        # X11 libraries - needed even for headless rendering
+        # Isaac Gym's GLFW requires these
+        libxext6 \
+        libx11-6 \
+        libxrender1 \
+        libxtst6 \
+        libxi6 \
+        # VNC components for remote GUI
+        xvfb \          # Virtual framebuffer (creates virtual display)
+        x11vnc \        # VNC server to stream the display
+        fluxbox \       # Lightweight window manager
+        xterm \         # Terminal emulator
+        # OpenGL utilities for testing
+        mesa-utils \
+        # Python 3.8 and pip
+        python3 \
+        python3-pip \
+        python3-dev \
+        && rm -rf /var/lib/apt/lists/*
+    
+    # ============================================================
+    # PYTHON DEPENDENCIES
+    # ============================================================
+    
+    # Upgrade pip to latest version
+    python3 -m pip install --upgrade pip setuptools wheel
+    
+    # Install PyTorch with CUDA 11.8 support
+    # IMPORTANT: Must match the CUDA version in the container base image
+    # Isaac Gym requires PyTorch 1.10+ but we use 2.0.1 for better performance
+    pip3 install torch==2.0.1 torchvision==0.15.2 --index-url https://download.pytorch.org/whl/cu118
+    
+    # Install Isaac Gym's Python dependencies
+    # These are the packages listed in Isaac Gym's setup.py
+    pip3 install numpy==1.23.5 scipy pyyaml pillow imageio ninja
+    
+    # Create workspace directory for mounting code
+    mkdir -p /workspace
+
+%environment
+    # ============================================================
+    # RUNTIME ENVIRONMENT VARIABLES
+    # ============================================================
+    
+    # Tell NVIDIA container runtime which capabilities to enable
+    export NVIDIA_VISIBLE_DEVICES=all
+    export NVIDIA_DRIVER_CAPABILITIES=graphics,utility,compute,display
+    
+    # Force using NVIDIA libraries for OpenGL
+    # This ensures we use GPU acceleration, not software rendering
+    export __GLX_VENDOR_LIBRARY_NAME=nvidia
+    
+    # Use EGL platform for offscreen rendering
+    # Isaac Gym can render without a display using EGL
+    export PYOPENGL_PLATFORM=egl
+
+%runscript
+    # Default action when running the container
+    exec "$@"
