@@ -118,6 +118,55 @@ The inline comments in the scripts explain what each part does and why.
 - **CUDA:** 11.8
 - **Isaac Gym:** Preview 4
 
+## Using with Legged Gym
+
+If you want to use this setup with Legged Gym for training legged robots:
+
+### 1. Clone Required Repositories
+```bash
+cd ~
+git clone https://github.com/leggedrobotics/legged_gym.git
+git clone https://github.com/leggedrobotics/rsl_rl.git
+cd rsl_rl && git checkout v1.0.2 && cd ~
+```
+
+### 2. Install Dependencies (One-Time)
+
+The first time you run, the script will automatically install:
+- `rsl_rl` (PPO implementation)
+- `legged_gym` (locomotion environments)
+- `tensorboard` (for logging)
+
+These are installed as **editable installs**, meaning:
+- Your code changes are picked up immediately
+- No need to reinstall after modifying the code
+- Only reinstalls if you change dependencies
+
+### 3. Run Training
+
+Use the provided script: [examples/run_legged_gym.sh](examples/run_legged_gym.sh)
+```bash
+chmod +x examples/run_legged_gym.sh
+./examples/run_legged_gym.sh
+```
+
+The script will print the SSH tunnel command with the correct compute node:
+```bash
+ssh -L 5900:cn2XXX:5900 your_username@agate.msi.umn.edu
+```
+
+Then connect your VNC viewer to `localhost:5900` to see the training live!
+
+### 4. Modify and Experiment
+
+Edit code directly on MSI:
+```bash
+vim ~/legged_gym/legged_gym/envs/base/legged_robot.py
+```
+
+Changes are immediately visible on the next run - no container rebuild or reinstall needed!
+
+
 ## Acknowledgments
 
 This solution was inspired by [AlexandreBrown/Maniskill3-Singularity-Example](https://github.com/AlexandreBrown/Maniskill3-Singularity-Example), which documented the OS mismatch problem and selective library binding approach.
